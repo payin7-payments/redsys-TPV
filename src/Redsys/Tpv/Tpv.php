@@ -185,7 +185,7 @@ class Tpv
         return base64_encode(json_encode($this->getMerchantParameters()));
     }
 
-    public function sendXml(array $options)
+    public function sendXml(array $options, &$post_data = [])
     {
         $this->values = [];
 
@@ -442,7 +442,6 @@ class Tpv
     {
         $message = Messages::getByCode($code);
 
-        /** @noinspection PhpIllegalStringOffsetInspection */
         throw new Exception($message ? $message['message'] : '', (int)$code);
     }
 }

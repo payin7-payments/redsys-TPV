@@ -42,9 +42,13 @@ class Tpv
 
     protected $environment = '';
     protected $environments = [
-        'test' => 'https://sis-t.redsys.es:25443/sis',
-        'real' => 'https://sis.redsys.es/sis',
+        'test' => 'https://sis-t.redsys.es:25443/sis/services/SerClsWSEntradaV2',
+        'real' => 'https://sis.redsys.es/sis/services/SerClsWSEntradaV2',
     ];
+//    protected $environments = [
+//        'test' => 'https://sis-t.redsys.es:25443/sis',
+//        'real' => 'https://sis.redsys.es/sis',
+//    ];
 
     protected $values = [];
 

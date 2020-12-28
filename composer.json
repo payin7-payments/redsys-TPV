@@ -1,5 +1,5 @@
 {
-    "name": "redsys/tpv",
+    "name": "payin7-payments/redsys-tpv",
     "keywords": ["tpv", "redsys", "sermepa", "servired"],
     "description": "Package to connect with Redsys/Sermepa/Servired TPV",
     "license": "MIT",

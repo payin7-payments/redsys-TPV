@@ -1,4 +1,5 @@
 <?php
+
 namespace Redsys\Tpv;
 
 use Exception;
@@ -7,14 +8,14 @@ class Signature
 {
     public static function fromValues($prefix, array $values, $key)
     {
-        $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'TransactionType', 'MerchantURL');
+        $fields = ['Amount', 'Order', 'MerchantCode', 'Currency', 'TransactionType', 'MerchantURL'];
 
         return self::calculate($prefix, $fields, $values, $key);
     }
 
     public static function fromTransaction($prefix, array $values, $key)
     {
-        $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'Response');
+        $fields = ['Amount', 'Order', 'MerchantCode', 'Currency', 'Response'];
 
         return self::calculate($prefix, $fields, $values, $key);
     }
@@ -38,12 +39,12 @@ class Signature
     protected static function calculate($prefix, array $fields, array $values, $key)
     {
         foreach ($fields as $field) {
-            if (!isset($values[$prefix.$field])) {
+            if (!isset($values[$prefix . $field])) {
                 throw new Exception(sprintf('Field <strong>%s</strong> is empty and required', $field));
             }
         }
 
-        $key = self::encryptKey($values[$prefix.'Order'], $key);
+        $key = self::encryptKey($values[$prefix . 'Order'], $key);
 
         return self::MAC256(base64_encode(json_encode($values)), $key);
     }
@@ -60,14 +61,14 @@ class Signature
     protected static function encrypt3DESOpenSSL($message, $key)
     {
         $l = ceil(strlen($message) / 8) * 8;
-        $message = $message.str_repeat("\0", $l - strlen($message));
+        $message = $message . str_repeat("\0", $l - strlen($message));
 
         return substr(openssl_encrypt($message, 'des-ede3-cbc', $key, OPENSSL_RAW_DATA, "\0\0\0\0\0\0\0\0"), 0, $l);
     }
 
     protected static function encrypt3DESMcrypt($message, $key)
     {
-        $iv = implode(array_map('chr', array(0, 0, 0, 0, 0, 0, 0, 0)));
+        $iv = implode(array_map('chr', [0, 0, 0, 0, 0, 0, 0, 0]));
 
         return mcrypt_encrypt(MCRYPT_3DES, $key, $message, MCRYPT_MODE_CBC, $iv);
     }

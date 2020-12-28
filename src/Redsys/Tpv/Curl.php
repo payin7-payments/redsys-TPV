@@ -1,4 +1,5 @@
 <?php
+
 namespace Redsys\Tpv;
 
 use DOMDocument;
@@ -7,11 +8,13 @@ use Exception;
 
 class Curl
 {
-    protected $settings = array();
+    protected $settings = [];
 
     protected $connect;
     protected $html;
     protected $info;
+    private $error;
+    private $error_no;
 
     public function __construct(array $settings)
     {
@@ -40,12 +43,12 @@ class Curl
 
         $this->connect = curl_init();
 
-        $header = array(
+        $header = [
             'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36',
             'Connection: keep-alive',
             'Cache-Control: no-cache',
-            'Expect:'
-        );
+            'Expect:',
+        ];
 
         curl_setopt($this->connect, CURLOPT_HEADER, false);
         curl_setopt($this->connect, CURLOPT_HTTPHEADER, $header);
@@ -78,9 +81,9 @@ class Curl
         curl_setopt($this->connect, $option, $value);
     }
 
-    public function exec($url, $get = array(), $post = array())
+    public function exec($url, $get = [], $post = [])
     {
-        $url = $this->settings['base'].str_replace($this->settings['base'], '', $url);
+        $url = $this->settings['base'] . str_replace($this->settings['base'], '', $url);
 
         if ($get && is_array($get)) {
             $url .= strstr($url, '?') ? '&' : '?';
@@ -91,7 +94,7 @@ class Curl
             if (empty($post)) {
                 Debug::d($url);
             } else {
-                Debug::d(array('url' => $url, 'post' => $post));
+                Debug::d(['url' => $url, 'post' => $post]);
             }
         }
 
@@ -99,18 +102,20 @@ class Curl
 
         $this->html = curl_exec($this->connect);
         $this->info = curl_getinfo($this->connect);
+        $this->error = curl_error($this->connect);
+        $this->error_no = curl_errno($this->connect);
 
         $this->setBase();
 
         return $this->html;
     }
 
-    public function get($url, $get = array())
+    public function get($url, $get = [])
     {
         return $this->exec($url, $get);
     }
 
-    public function post($url, $get = array(), $post = array())
+    public function post($url, $get = [], $post = [])
     {
         curl_setopt($this->connect, CURLOPT_POST, true);
         curl_setopt($this->connect, CURLOPT_POSTFIELDS, $post);
@@ -130,7 +135,7 @@ class Curl
 
         $base = parse_url($this->info['url']);
 
-        $this->settings['base'] = $base['scheme'].'://'.$base['host'];
+        $this->settings['base'] = $base['scheme'] . '://' . $base['host'];
     }
 
     public function getXPath()
@@ -156,6 +161,16 @@ class Curl
     public function getHtml()
     {
         return $this->html;
+    }
+
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    public function getErrorNo()
+    {
+        return $this->error_no;
     }
 
     public function getInfo()
